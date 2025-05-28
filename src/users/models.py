@@ -1,7 +1,10 @@
 from decimal import Decimal
+
+from sqlalchemy import Numeric, String
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy import String, Numeric
+
 from database import Base
+
 
 class UserModel(Base):
     __tablename__ = "users"

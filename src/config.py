@@ -8,6 +8,7 @@ class DbSettings(BaseSettings):
     db_password: str = Field(..., env="DB_PASSWORD")
     db_host: str = Field("localhost", env="DB_HOST")
     db_port: int = Field(5432, env="DB_PORT")
+
     @property
     def database_url(self) -> str:
         return (
@@ -16,6 +17,7 @@ class DbSettings(BaseSettings):
             f"@{self.db_host}:{self.db_port}/{self.db_name}"
         )
 
+
 class AuthJWT(BaseSettings):
     secret_key: str = Field(..., env="SECRET_KEY")
     algorithm: str = "HS256"
@@ -23,10 +25,11 @@ class AuthJWT(BaseSettings):
     refresh_token_expire_minutes: int = 30
 
 
-class Settings():
+class Settings:
     db: DbSettings = DbSettings()
     auth_jwt: AuthJWT = AuthJWT()
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding = "utf-8")
+    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+
 
 settings = Settings()

@@ -1,27 +1,29 @@
 from typing import Annotated
+
 from fastapi import APIRouter, Depends, Path
 from sqlalchemy import update
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from database import get_session
-from users.models import UserModel
-from users.utils import hash_password, create_access_token, create_refresh_token
-from users.schemas import (
-    TokenObtainPairSchema,
-    UserAuthSchema,
-    UserSchema,
-    UserInfoResponseSchema,
-    TokenSchema,
-    AddMoneySchema,
-)
 from users.dependencies import (
+    get_token_validator,
     get_user_from_access_token,
     get_user_from_credentials,
     get_user_from_refresh_token,
     validate_token_payload,
-    get_token_validator,
 )
-from users.exceptions import UserAlreadyExist, SelfActionRequired, DatabaseError
+from users.exceptions import DatabaseError, SelfActionRequired, UserAlreadyExist
+from users.models import UserModel
+from users.schemas import (
+    AddMoneySchema,
+    TokenObtainPairSchema,
+    TokenSchema,
+    UserAuthSchema,
+    UserInfoResponseSchema,
+    UserSchema,
+)
+from users.utils import create_access_token, create_refresh_token, hash_password
 
 
 users_router = APIRouter()
@@ -46,9 +48,8 @@ async def register_user_jwt(
 
 @users_router.post("/token")
 async def get_user_token(
-    user: Annotated[UserSchema, Depends(get_user_from_credentials)]
+    user: Annotated[UserSchema, Depends(get_user_from_credentials)],
 ) -> TokenObtainPairSchema:
-
     access_token = create_access_token(user.id, user.token_version)
     refresh_token = create_refresh_token(user.id, user.token_version)
     return {
@@ -59,14 +60,14 @@ async def get_user_token(
 
 @users_router.post("/users/me")
 async def get_user_info(
-    current_user: Annotated[UserSchema, Depends(get_user_from_access_token)]
+    current_user: Annotated[UserSchema, Depends(get_user_from_access_token)],
 ) -> UserInfoResponseSchema:
     return current_user
 
 
 @users_router.post("/token/refresh")
 async def refresh_tokens(
-    user: Annotated[UserSchema, Depends(get_user_from_refresh_token)]
+    user: Annotated[UserSchema, Depends(get_user_from_refresh_token)],
 ) -> TokenObtainPairSchema:
     access_token = create_access_token(user.id, user.token_version)
     refresh_token = create_refresh_token(user.id, user.token_version)

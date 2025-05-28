@@ -1,30 +1,32 @@
 from functools import lru_cache
 from typing import Annotated, Callable
 
-from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import Depends
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jwt.exceptions import DecodeError, ExpiredSignatureError
 from pydantic import ValidationError
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from database import get_session
-from users.models import UserModel
-from users.utils import validate_password, decode_jwt
-from users.schemas import (
-    UserAuthSchema,
-    UserSchema,
-    TokenPayloadSchema,
-    TokenType,
-    RefreshTokenSchema,
-)
 from users.exceptions import (
     InvalidCredentials,
-    UserNotFound,
     InvalidToken,
-    TokenExpired,
     InvalidTokenType,
+    TokenExpired,
     TokenRevoked,
+    UserNotFound,
 )
+from users.models import UserModel
+from users.schemas import (
+    RefreshTokenSchema,
+    TokenPayloadSchema,
+    TokenType,
+    UserAuthSchema,
+    UserSchema,
+)
+from users.utils import decode_jwt, validate_password
+
 
 http_bearer = HTTPBearer()
 
@@ -34,7 +36,6 @@ class TokenValidator:
         self.expected_token_type = expected_token_type
 
     async def __call__(self, token: str, session: AsyncSession) -> UserSchema:
-
         token_payload = validate_token_payload(token)
 
         if (
@@ -56,7 +57,7 @@ def get_token_validator(expected_token_type: TokenType | None = None) -> TokenVa
 
 
 async def get_access_token_from_header(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(http_bearer)]
+    credentials: Annotated[HTTPAuthorizationCredentials, Depends(http_bearer)],
 ) -> str:
     return credentials.credentials
 
