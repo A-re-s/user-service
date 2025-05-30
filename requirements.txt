@@ -22,6 +22,7 @@ httptools==0.6.4
 httpx==0.28.1
 identify==2.6.12
 idna==3.10
+iniconfig==2.1.0
 isort==6.0.1
 Jinja2==3.1.6
 markdown-it-py==3.0.0
@@ -33,6 +34,7 @@ nodeenv==1.9.1
 packaging==25.0
 pathspec==0.12.1
 platformdirs==4.3.7
+pluggy==1.6.0
 pre_commit==4.2.0
 pydantic==2.11.3
 pydantic-settings==2.9.1
@@ -40,6 +42,7 @@ pydantic_core==2.33.1
 Pygments==2.19.1
 PyJWT==2.10.1
 pylint==3.3.6
+pytest==8.3.5
 python-dotenv==1.1.0
 python-multipart==0.0.20
 PyYAML==6.0.2

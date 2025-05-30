@@ -23,3 +23,10 @@ repos:
       types: [python]
       additional_dependencies: [pylint==3.3.6]
 
+    - id: pytest
+      name: pytest
+      entry: python -m pytest
+      language: system
+      types: [python]
+      pass_filenames: false
+      always_run: true

@@ -9,3 +9,6 @@ profile = "black"
 lines_after_imports = 2
 include_trailing_comma = true
 skip = ["__init__.py"]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
