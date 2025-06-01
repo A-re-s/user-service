@@ -63,7 +63,9 @@ class AddMoneySchema(BaseModel):
             gt=0,
             decimal_places=10,
             max_digits=30,
-            example=100.50,
-            description="Positive decimal amount",
+            json_schema_extra={
+                "example": 100.50,
+                "description": "Positive decimal amount",
+            },
         ),
     ]

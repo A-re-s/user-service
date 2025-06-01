@@ -61,7 +61,7 @@ async def get_user_token(
     }
 
 
-@users_router.post("/users/me")
+@users_router.get("/users/me")
 async def get_user_info(
     current_user: Annotated[UserSchema, Depends(get_user_from_access_token)],
 ) -> UserInfoResponseSchema:
