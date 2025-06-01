@@ -16,7 +16,7 @@ from users.exceptions import (
     InvalidTokenType,
     TokenExpired,
     TokenRevoked,
-    UserNotFound,
+    Usernot_found,
 )
 from users.models import UserModel
 from users.schemas import (
@@ -113,7 +113,7 @@ async def get_user_from_db(user_id: int, session: AsyncSession) -> UserSchema:
     result = await session.execute(select(UserModel).where(UserModel.id == user_id))
     user = result.scalar_one_or_none()
     if not user:
-        raise UserNotFound
+        raise Usernot_found
     return UserSchema.model_validate(user)
 
 

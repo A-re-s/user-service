@@ -28,5 +28,4 @@ docker-run-detached: docker-build
 	docker run --env-file .env --rm -d -p 8000:8000 user_service
 
 clean:
-	rm -rf __pycache__ .pytest_cache .mypy_cache
-
+	rm -rf __pycache__ .pytest_cache */__pycache__

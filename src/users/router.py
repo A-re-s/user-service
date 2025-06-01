@@ -7,6 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from config import Settings, get_settings
 from database import get_session
+from exceptions import DatabaseError, SelfActionRequired
 from users.dependencies import (
     get_token_validator,
     get_user_from_access_token,
@@ -14,7 +15,7 @@ from users.dependencies import (
     get_user_from_refresh_token,
     validate_token_payload,
 )
-from users.exceptions import DatabaseError, SelfActionRequired, UserAlreadyExist
+from users.exceptions import UserAlreadExits
 from users.models import UserModel
 from users.schemas import (
     AddMoneySchema,
@@ -43,7 +44,7 @@ async def register_user_jwt(
         await session.refresh(new_user)
     except IntegrityError as exc:
         await session.rollback()
-        raise UserAlreadyExist from exc
+        raise UserAlreadExits from exc
 
     return new_user
 
