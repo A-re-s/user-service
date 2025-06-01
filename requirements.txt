@@ -1,3 +1,4 @@
+aiosqlite==0.21.0
 annotated-types==0.7.0
 anyio==4.9.0
 astroid==3.3.9
@@ -43,6 +44,7 @@ Pygments==2.19.1
 PyJWT==2.10.1
 pylint==3.3.6
 pytest==8.3.5
+pytest-asyncio==1.0.0
 python-dotenv==1.1.0
 python-multipart==0.0.20
 PyYAML==6.0.2

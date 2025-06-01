@@ -8,6 +8,7 @@ from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from config import Settings, get_settings
 from database import get_session
 from users.exceptions import (
     InvalidCredentials,
@@ -35,8 +36,10 @@ class TokenValidator:
     def __init__(self, expected_token_type: TokenType | None = None):
         self.expected_token_type = expected_token_type
 
-    async def __call__(self, token: str, session: AsyncSession) -> UserSchema:
-        token_payload = validate_token_payload(token)
+    async def __call__(
+        self, token: str, session: AsyncSession, settings: Settings
+    ) -> UserSchema:
+        token_payload = validate_token_payload(token, settings)
 
         if (
             self.expected_token_type is not None
@@ -72,9 +75,10 @@ def get_token_validator_with_token(
     async def dependency(
         token: Annotated[str, Depends(token_dependency)],
         session: Annotated[AsyncSession, Depends(get_session)],
+        settings: Annotated[Settings, Depends(get_settings)],
     ) -> int:
         validator = get_token_validator(expected_token_type)
-        return await validator(token=token, session=session)
+        return await validator(token=token, session=session, settings=settings)
 
     return dependency
 
@@ -113,9 +117,11 @@ async def get_user_from_db(user_id: int, session: AsyncSession) -> UserSchema:
     return UserSchema.model_validate(user)
 
 
-def validate_token_payload(token: str) -> TokenPayloadSchema:
+def validate_token_payload(token: str, settings: Settings) -> TokenPayloadSchema:
     try:
-        raw_payload = decode_jwt(token)
+        raw_payload = decode_jwt(
+            token, settings.auth_jwt.secret_key, settings.auth_jwt.algorithm
+        )
         token_payload: TokenPayloadSchema = TokenPayloadSchema(**raw_payload)
         return token_payload
     except (DecodeError, ValidationError) as exc:

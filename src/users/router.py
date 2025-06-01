@@ -5,6 +5,7 @@ from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from config import Settings, get_settings
 from database import get_session
 from users.dependencies import (
     get_token_validator,
@@ -36,6 +37,7 @@ async def register_user_jwt(
     hashed_password = hash_password(user.password)
     new_user: UserModel = UserModel(login=user.login, password=hashed_password)
     session.add(new_user)
+
     try:
         await session.commit()
         await session.refresh(new_user)
@@ -49,9 +51,10 @@ async def register_user_jwt(
 @users_router.post("/token")
 async def get_user_token(
     user: Annotated[UserSchema, Depends(get_user_from_credentials)],
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> TokenObtainPairSchema:
-    access_token = create_access_token(user.id, user.token_version)
-    refresh_token = create_refresh_token(user.id, user.token_version)
+    access_token = create_access_token(user.id, user.token_version, settings)
+    refresh_token = create_refresh_token(user.id, user.token_version, settings)
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
@@ -68,9 +71,10 @@ async def get_user_info(
 @users_router.post("/token/refresh")
 async def refresh_tokens(
     user: Annotated[UserSchema, Depends(get_user_from_refresh_token)],
+    settings: Annotated[Settings, Depends(get_settings)],
 ) -> TokenObtainPairSchema:
-    access_token = create_access_token(user.id, user.token_version)
-    refresh_token = create_refresh_token(user.id, user.token_version)
+    access_token = create_access_token(user.id, user.token_version, settings)
+    refresh_token = create_refresh_token(user.id, user.token_version, settings)
     return {
         "access_token": access_token,
         "refresh_token": refresh_token,
@@ -79,12 +83,14 @@ async def refresh_tokens(
 
 @users_router.post("/token/verify")
 async def verify_token(
-    payload: TokenSchema, session: Annotated[AsyncSession, Depends(get_session)]
+    payload: TokenSchema,
+    session: Annotated[AsyncSession, Depends(get_session)],
+    settings: Annotated[Settings, Depends(get_settings)],
 ):
     token = payload.token
     validator = get_token_validator()
-    token_payload = validate_token_payload(token)
-    user = await validator(token=token, session=session)
+    token_payload = validate_token_payload(token, settings)
+    user = await validator(token=token, session=session, settings=settings)
     return {
         "detail": "Token is valid",
         "user_id": user.id,

@@ -21,7 +21,7 @@ class UserInfoResponseSchema(BaseModel):
     money_balance: Annotated[
         Decimal,
         Field(
-            gt=0,
+            ge=0,
             decimal_places=10,
             max_digits=30,
         ),
