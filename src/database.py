@@ -16,7 +16,7 @@ async def get_engine(
 ):
     engine = create_async_engine(settings.db.database_url)
     yield engine
-    engine.dispose()
+    await engine.dispose()
 
 
 async def get_session_maker(engine: Annotated[AsyncEngine, Depends(get_engine)]):
