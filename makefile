@@ -2,6 +2,8 @@
 
 all: format lint test
 
+run:
+	python src/main.py
 test:
 	python -m pytest --disable-warnings
 
