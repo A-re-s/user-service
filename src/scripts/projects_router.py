@@ -13,7 +13,7 @@ from users.dependencies import get_user_from_access_token
 from users.schemas import UserSchema
 
 
-projects_router = APIRouter()
+projects_router = APIRouter(tags=["projects"])
 
 
 @projects_router.post("/projects/", response_model=ProjectInfoSchema)

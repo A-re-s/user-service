@@ -28,7 +28,7 @@ from users.schemas import (
 from users.utils import create_access_token, create_refresh_token, hash_password
 
 
-users_router = APIRouter()
+users_router = APIRouter(tags=["users"])
 
 
 @users_router.post("/register")
