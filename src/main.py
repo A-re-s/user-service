@@ -28,7 +28,12 @@ async def test_db_connection(*args):
         await engine.dispose()
 
 
-app = FastAPI(lifespan=test_db_connection, root_path="/api/v1")
+app = FastAPI(
+    lifespan=test_db_connection,
+    root_path="/api/v1",
+    title="user-service",
+    version="1.0",
+)
 app.include_router(main_router)
 
 if __name__ == "__main__":
